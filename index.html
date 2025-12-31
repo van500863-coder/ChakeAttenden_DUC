@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ប្រព័ន្ធគ្រប់គ្រងវត្តមាន | DUC Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #4f46e5;       /* Indigo Main */
+            --primary-dark: #3730a3;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --success: #10b981;       /* Green */
+            --danger: #ef4444;        /* Red */
+            --accent: #f59e0b;        /* Amber/Yellow */
+        }
+
+        body {
+            font-family: 'Kantumruy Pro', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px; /* កំណត់ទំហំឱ្យល្មមដូច ID Card ធំ */
+        }
+
+        /* --- 1. Search Bar Style --- */
+        .search-container {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .search-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        .input-group {
+            position: relative;
+            display: flex;
+            gap: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 20px;
+            padding-left: 45px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-family: 'Kantumruy Pro', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .search-icon-input {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+        button.search-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Kantumruy Pro', sans-serif;
+            font-weight: 600;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+        button.search-btn:hover { background: var(--primary-dark); }
+
+        /* Suggestion Box */
+        .suggestion-list {
+            position: absolute;
+            top: 105%;
+            left: 0;
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            z-index: 100;
+            max-height: 250px;
+            overflow-y: auto;
+            display: none;
+            border: 1px solid #f3f4f6;
+        }
+        .suggestion-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f9fafb;
+            display: flex;
+            justify-content: space-between;
+        }
+        .suggestion-item:hover { background-color: #f0fdfa; color: var(--primary); }
+
+        /* --- 2. THE MAIN UNIFIED CARD --- */
+        #dashboard-content { display: none; animation: popIn 0.5s ease; }
+
+        .main-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            position: relative;
+        }
+
+        /* Top Section: Profile */
+        .card-header-section {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+        
+        /* Decorative circles */
+        .card-header-section::before {
+            content: ''; position: absolute; top: -50px; left: -50px; width: 150px; height: 150px;
+            background: rgba(255,255,255,0.05); border-radius: 50%;
+        }
+        .card-header-section::after {
+            content: ''; position: absolute; bottom: -30px; right: -30px; width: 100px; height: 100px;
+            background: rgba(255,255,255,0.05); border-radius: 50%;
+        }
+
+        .profile-img-box {
+            width: 110px;
+            height: 110px;
+            margin: 0 auto 15px;
+            border-radius: 50%;
+            border: 4px solid rgba(255,255,255,0.2);
+            padding: 3px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .profile-img-box img {
+            width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
+            background: white;
+        }
+        
+        .profile-placeholder {
+            width: 100%; height: 100%; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: white; color: #cbd5e1; font-size: 2.5rem;
+        }
+
+        .user-name { font-size: 1.6rem; font-weight: 700; margin: 0; letter-spacing: 0.5px; }
+        .user-meta { color: #94a3b8; font-size: 0.95rem; margin-top: 5px; display: flex; justify-content: center; gap: 15px; }
+        .meta-tag { background: rgba(255,255,255,0.1); padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; }
+
+        /* Middle Section: Data Grid */
+        .card-body-section {
+            padding: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-column {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 1.2rem;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .col-title {
+            font-size: 0.9rem; font-weight: 700; text-transform: uppercase; color: var(--text-light);
+            margin-bottom: 1rem; display: block;
+        }
+        
+        .data-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 8px 0; border-bottom: 1px solid #e2e8f0;
+        }
+        .data-row:last-child { border-bottom: none; }
+        
+        .label { font-size: 0.9rem; color: var(--text-dark); }
+        .value { font-weight: 700; font-size: 1.1rem; }
+        .val-perm { color: var(--success); }
+        .val-abs { color: var(--danger); }
+
+        /* Icon Headers */
+        .icon-study { color: var(--primary); font-size: 1.2rem; margin-bottom: 5px; }
+        .icon-work { color: var(--accent); font-size: 1.2rem; margin-bottom: 5px; }
+
+        /* Bottom Section: Total */
+        .card-footer-section {
+            background: #1e293b;
+            color: white;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-label { font-size: 0.9rem; color: #cbd5e1; font-weight: 600; text-transform: uppercase; }
+        .footer-stat { text-align: right; }
+        .big-number { font-size: 1.4rem; font-weight: 700; }
+        .sub-text { font-size: 0.8rem; color: #94a3b8; }
+
+        /* Loader */
+        .loader {
+            display: none; margin: 15px auto; width: 30px; height: 30px;
+            border: 3px solid #e2e8f0; border-top: 3px solid var(--primary);
+            border-radius: 50%; animation: spin 1s infinite linear;
+        }
+        .msg { text-align: center; margin-top: 10px; color: var(--danger); font-weight: 500; }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        /* Mobile Responsive */
+        @media (max-width: 500px) {
+            .stats-grid { grid-template-columns: 1fr; } /* Stack columns on phone */
+            .card-footer-section { flex-direction: column; gap: 15px; text-align: center; }
+            .footer-stat { text-align: center; }
+            button.search-btn { display: none; } /* Hide button on mobile, use Enter or Tap */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="search-container">
+            <div class="search-title">
+                <i class="fa-solid fa-id-card-clip"></i> ប្រព័ន្ធឆែកវត្តមាននិស្សិត
+            </div>
+            <div class="input-group">
+                <i class="fa-solid fa-magnifying-glass search-icon-input"></i>
+                <input type="text" id="searchInput" placeholder="វាយឈ្មោះនៅទីនេះ..." autocomplete="off">
+                <div id="suggestion-box" class="suggestion-list"></div>
+                <button class="search-btn" onclick="manualSearch()">ស្វែងរក</button>
+            </div>
+            <div class="loader" id="loader"></div>
+            <div class="msg" id="statusMsg"></div>
+        </div>
+
+        <div id="dashboard-content">
+            <div class="main-card">
+                
+                <div class="card-header-section">
+                    <div class="profile-img-box" id="profileContainer">
+                        <div class="profile-placeholder"><i class="fa-solid fa-user"></i></div>
+                    </div>
+                    <h2 class="user-name" id="dName">---</h2>
+                    <div class="user-meta">
+                        <span class="meta-tag"><i class="fa-solid fa-venus-mars"></i> <span id="dGender">-</span></span>
+                        <span class="meta-tag"><i class="fa-solid fa-layer-group"></i> <span id="dClass">-</span></span>
+                    </div>
+                </div>
+
+                <div class="card-body-section">
+                    <div class="stats-grid">
+                        
+                        <div class="stat-column">
+                            <i class="fa-solid fa-book-open icon-study"></i>
+                            <span class="col-title">វត្តមានម៉ោងរៀន</span>
+                            <div class="data-row">
+                                <span class="label">ច្បាប់ (P)</span>
+                                <span class="value val-perm" id="dStudyPerm">0</span>
+                            </div>
+                            <div class="data-row">
+                                <span class="label">ឥតច្បាប់ (A)</span>
+                                <span class="value val-abs" id="dStudyAbs">0</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-column">
+                            <i class="fa-solid fa-briefcase icon-work"></i>
+                            <span class="col-title">វត្តមានម៉ោងការងារ</span>
+                            <div class="data-row">
+                                <span class="label">ច្បាប់ (P)</span>
+                                <span class="value val-perm" id="dWorkPerm">0</span>
+                            </div>
+                            <div class="data-row">
+                                <span class="label">ឥតច្បាប់ (A)</span>
+                                <span class="value val-abs" id="dWorkAbs">0</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="card-footer-section">
+                    <div>
+                        <div class="footer-label">សរុបរួម (TOTAL)</div>
+                        <div class="sub-text">លទ្ធផលវត្តមានប្រចាំខែ</div>
+                    </div>
+                    <div class="footer-stat">
+                        <div style="margin-bottom: 5px;">
+                            <span style="color: #4ade80; margin-right: 10px;">ច្បាប់: <span class="big-number" id="dTotalPerm">0</span></span>
+                            <span style="color: #f87171;">អវត្តមាន: <span class="big-number" id="dTotalAbs">0</span></span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // ដាក់ URL របស់អ្នកនៅទីនេះ
+        // ==========================================
+        const API_URL = "https://script.google.com/macros/s/AKfycbzdiNwGPuZ8jMooPTle1R6qOkMrL564QbZptnHh1seAoC3AU5e9cOu8y-VsJNHMzFrU/exec"; 
+        
+        let allData = [];
+        const searchInput = document.getElementById('searchInput');
+        const suggestionBox = document.getElementById('suggestion-box');
+        const dashboard = document.getElementById('dashboard-content');
+        const loader = document.getElementById('loader');
+        const statusMsg = document.getElementById('statusMsg');
+        const profileContainer = document.getElementById('profileContainer');
+
+        // Fetch Data on Load
+        window.onload = async function() {
+            loader.style.display = 'block';
+            statusMsg.innerText = "";
+            try {
+                const res = await fetch(API_URL);
+                const data = await res.json();
+                if (data.error) {
+                    statusMsg.innerText = data.error;
+                } else {
+                    allData = data;
+                    console.log("Data loaded:", allData.length);
+                }
+            } catch (err) {
+                statusMsg.innerText = "Error fetching data.";
+            } finally {
+                loader.style.display = 'none';
+            }
+        };
+
+        // Autocomplete
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            suggestionBox.innerHTML = '';
+            
+            if (query.length === 0) {
+                suggestionBox.style.display = 'none';
+                return;
+            }
+
+            const matches = allData.filter(item => item.name.toLowerCase().includes(query)).slice(0, 8); 
+
+            if (matches.length > 0) {
+                suggestionBox.style.display = 'block';
+                matches.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'suggestion-item';
+                    div.innerHTML = `<span>${item.name}</span> <span style="font-size:0.8em; color:#999">${item.className}</span>`;
+                    div.onclick = () => {
+                        searchInput.value = item.name;
+                        suggestionBox.style.display = 'none';
+                        showDashboard(item);
+                    };
+                    suggestionBox.appendChild(div);
+                });
+            } else {
+                suggestionBox.style.display = 'none';
+            }
+        });
+
+        function manualSearch() {
+            const query = searchInput.value.trim();
+            if (!query) return;
+            const result = allData.find(item => item.name.toLowerCase() === query.toLowerCase()) 
+                        || allData.find(item => item.name.toLowerCase().includes(query.toLowerCase()));
+            if (result) {
+                showDashboard(result);
+                suggestionBox.style.display = 'none';
+            } else {
+                dashboard.style.display = 'none';
+                statusMsg.innerText = "រកមិនឃើញឈ្មោះនេះទេ!";
+            }
+        }
+
+        function showDashboard(data) {
+            statusMsg.innerText = "";
+            
+            // Profile Info
+            document.getElementById('dName').innerText = data.name;
+            document.getElementById('dGender').innerText = data.gender;
+            document.getElementById('dClass').innerText = data.className;
+
+            // Photo Logic
+            if (data.photo && data.photo !== "") {
+                profileContainer.innerHTML = `<img src="${data.photo}" alt="Profile">`;
+            } else {
+                profileContainer.innerHTML = `<div class="profile-placeholder"><i class="fa-solid fa-user"></i></div>`;
+            }
+
+            // Work Data
+            document.getElementById('dWorkPerm').innerText = data.workPerm;
+            document.getElementById('dWorkAbs').innerText = data.workAbs;
+
+            // Study Data
+            document.getElementById('dStudyPerm').innerText = data.studyPerm;
+            document.getElementById('dStudyAbs').innerText = data.studyAbs;
+
+            // Totals
+            const totalPerm = (Number(data.workPerm)||0) + (Number(data.studyPerm)||0);
+            const totalAbs = (Number(data.workAbs)||0) + (Number(data.studyAbs)||0);
+
+            document.getElementById('dTotalPerm').innerText = totalPerm;
+            document.getElementById('dTotalAbs').innerText = totalAbs;
+
+            dashboard.style.display = 'block';
+        }
+
+        // Close dropdown if clicked outside
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !suggestionBox.contains(e.target)) {
+                suggestionBox.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
